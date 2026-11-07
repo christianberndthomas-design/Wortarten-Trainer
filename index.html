@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Wortarten-Training</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+:root {
+  --bg: #eef1f6;
+  --card: #ffffff;
+  --ink: #18202f;
+  --muted: #556079;
+  --line: #d3d9e5;
+  --margin: #e6a3a0;
+  --grp-dekl: #dde5f8; --grp-konj: #f6dfdc; --grp-unv: #dbeedf; --lvl: #f6e6a8;
+  --ok: #1d7f45;
+  --bad: #c22d2d;
+  --m-nomen: #161a24; --m-artikel: #6fbfee; --m-adj: #1f3f9b; --m-verb: #d32f2f;
+  --m-adv: #f08a00; --m-pron: #7b3fbf; --m-prp: #2e9b4f; --m-kon: #ee6fa8;
+  --c-N: var(--m-nomen); --c-ART: var(--m-artikel); --c-ARB: var(--m-artikel); --c-ARU: var(--m-artikel);
+  --c-ADJ: var(--m-adj); --c-V: var(--m-verb); --c-ADV: var(--m-adv);
+  --c-ADL: var(--m-adv); --c-ADT: var(--m-adv); --c-ADK: var(--m-adv); --c-ADM: var(--m-adv);
+  --c-PRO: var(--m-pron); --c-PPR: var(--m-pron); --c-POS: var(--m-pron); --c-DEM: var(--m-pron);
+  --c-REF: var(--m-pron); --c-REL: var(--m-pron); --c-INT: var(--m-pron);
+  --c-PRP: var(--m-prp); --c-PRA: var(--m-prp); --c-PRD: var(--m-prp); --c-PRG: var(--m-prp); --c-KON: var(--m-kon); --c-KOO: var(--m-kon); --c-KOS: var(--m-kon);
+  --f-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141c; --card: #19202c; --ink: #e7ebf3; --muted: #9aa5ba; --line: #2c3547;
+    --margin: #7a3b3b; --grp-dekl: #26314d; --grp-konj: #432b2e; --grp-unv: #253f2f; --lvl: #4d4220; --ok: #5fd08a; --bad: #ff8a80;
+    --m-nomen: #eef1f7; --m-artikel: #8fd0f7; --m-adj: #6f8ff0; --m-verb: #ff6b6b;
+    --m-adv: #ffa940; --m-pron: #b78cf0; --m-prp: #5fd08a; --m-kon: #ff9cc6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141c; --card: #19202c; --ink: #e7ebf3; --muted: #9aa5ba; --line: #2c3547;
+  --margin: #7a3b3b; --grp-dekl: #26314d; --grp-konj: #432b2e; --grp-unv: #253f2f; --lvl: #4d4220; --ok: #5fd08a; --bad: #ff8a80;
+    --m-nomen: #eef1f7; --m-artikel: #8fd0f7; --m-adj: #6f8ff0; --m-verb: #ff6b6b;
+    --m-adv: #ffa940; --m-pron: #b78cf0; --m-prp: #5fd08a; --m-kon: #ff9cc6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 17px; line-height: 1.5;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.8rem, 6vw, 2.5rem); line-height: 1.1; margin: 0; letter-spacing: -0.01em; text-wrap: balance; text-align: center; }
+h2 { font-family: var(--f-display); font-weight: 600; font-size: 1.25rem; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.lead { color: var(--muted); max-width: 62ch; margin: 6px auto 0; text-align: center; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.levels { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.lvl { width: 180px; flex: none; background: none; border: 0; padding: 0; border-radius: 18px; }
+.lvl svg { display: block; width: 100%; height: auto; overflow: visible; }
+.lvl .lcirc { fill: var(--lvl); stroke: var(--lvl); stroke-width: 3; }
+.lvl .lst { font-family: var(--f-body); font-weight: 700; font-size: 13px; letter-spacing: 0.1em; fill: var(--muted); text-anchor: middle; }
+.lvl .lnum { font-family: var(--f-display); font-weight: 800; font-size: 46px; fill: var(--ink); text-anchor: middle; }
+.lvl .lring { font-family: var(--f-body); font-size: 13px; fill: var(--muted); text-anchor: middle; }
+.lvl[aria-pressed="true"] .lcirc { stroke: var(--ink); }
+.lvl[aria-pressed="true"] .lst, .lvl[aria-pressed="true"] .lring { fill: var(--ink); }
+.lvl:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 440px) {
+  .levels { gap: 4px 8px; }
+  .lvl { width: calc(50% - 4px); max-width: 176px; }
+}
+.progress { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; justify-content: space-between; font-size: 0.92rem; color: var(--muted); }
+.bar { flex: 1 1 100%; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--ink); border-radius: 99px; transition: width 0.25s; }
+.progress b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.sheet { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 18px; }
+.sentence { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 8px; align-items: flex-start; font-size: clamp(1.15rem, 3.6vw, 1.5rem); }
+.unit { display: inline-flex; align-items: flex-start; white-space: nowrap; }
+.punct { padding-top: 0.38rem; font-size: 1em; margin-left: 1px; }
+.tok { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 2.8rem; padding: 6px 10px 5px; background: transparent; border: 2px dashed var(--line); border-radius: 10px; color: var(--ink); }
+.tok .w { line-height: 1.25; font-weight: 700; }
+.tok .l { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); min-height: 1.1em; line-height: 1.1; }
+.tok .g { font-size: 0.66rem; color: var(--muted); text-decoration: line-through; line-height: 1.1; }
+.tok.has { border-style: solid; border-color: var(--c); background: var(--card); background: color-mix(in srgb, var(--c) 16%, var(--card)); }
+.tok.has .l { color: var(--ink); }
+.tok.sel { outline: 3px solid var(--ink); outline-offset: 2px; }
+.tok.ok .l::before { content: "\2713\00a0"; color: var(--ok); }
+.tok.bad { border-width: 2px; }
+.tok.bad .l::before { content: "\2717\00a0"; color: var(--bad); }
+.tok:disabled { cursor: default; }
+.palette { display: flex; flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 14px 12px; }
+.pgroup { flex: 1 1 210px; min-width: 0; display: flex; flex-direction: column; gap: 6px; --grp: var(--grp-dekl); }
+.pgroup[data-cat="konj"] { --grp: var(--grp-konj); }
+.pgroup[data-cat="unv"] { --grp: var(--grp-unv); }
+.pgroup h3 { margin: 0; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.pgroup h3 { padding: 8px 10px; background: var(--grp); border-radius: 10px; text-align: center; }
+.pgroup h3 span { display: block; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 0.82rem; line-height: 1.3; margin-top: 2px; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.cls { position: relative; text-align: left; display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 8px; align-items: center; background: var(--grp); border: 2px solid var(--grp); border-radius: 10px; padding: 6px 28px 6px 8px; min-height: 50px; min-width: 0; }
+.cls .sym { grid-row: 1 / span 2; width: 26px; height: 26px; }
+.cls b { font-weight: 700; font-size: 0.95rem; line-height: 1.2; overflow-wrap: anywhere; hyphens: auto; }
+.cls span { font-size: 0.76rem; color: var(--muted); line-height: 1.25; overflow-wrap: anywhere; }
+.cls kbd { position: absolute; right: 5px; top: 5px; font: 700 0.66rem var(--f-body); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; line-height: 1.3; }
+.cls:hover:not(:disabled) { border-color: var(--c); }
+.cls:disabled { opacity: 0.5; cursor: default; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; }
+.btn { background: var(--card); border: 2px solid var(--ink); border-radius: 10px; padding: 10px 18px; font-weight: 700; min-height: 46px; }
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.hint { color: var(--muted); font-size: 0.92rem; }
+.feedback { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.feedback .head { font-family: var(--f-display); font-weight: 600; font-size: 1.1rem; }
+.feedback .head.good { color: var(--ok); }
+.feedback ul { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 4px; }
+.feedback .note { color: var(--muted); font-size: 0.94rem; }
+.result { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 18px; display: flex; flex-direction: column; gap: 16px; }
+.big { font-family: var(--f-display); font-weight: 800; font-size: clamp(2.4rem, 10vw, 3.6rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.rows { display: flex; flex-direction: column; gap: 8px; }
+.row { display: grid; grid-template-columns: minmax(8rem, 11.5rem) 1fr auto; gap: 10px; align-items: center; font-size: 0.95rem; overflow-wrap: anywhere; }
+.row .track { height: 12px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.row .track i { display: block; height: 100%; background: var(--c); border-radius: 99px; }
+.row .n { font-variant-numeric: tabular-nums; color: var(--muted); }
+@media (max-width: 440px) { .row { grid-template-columns: 7.5rem minmax(0, 1fr) auto; } }
+.cls.par::after { content: "\25BE"; position: absolute; right: 7px; bottom: 3px; color: var(--muted); font-size: 0.8rem; }
+.cls.open { border-color: var(--ink); }
+.cls.open::after { content: "\25B4"; }
+.subpanel { display: flex; flex-direction: column; gap: 8px; background: transparent; border: 2px solid var(--c); border-radius: 10px; padding: 8px; }
+.subhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.subclose { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 2px 10px; font-size: 0.85rem; color: var(--muted); }
+.sym { display: inline-block; flex: none; }
+.tok .l { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.tok .l .sym { width: 15px; height: 15px; }
+.rn { display: flex; align-items: center; gap: 6px; }
+.rn .sym { width: 18px; height: 18px; }
+.foot { color: var(--muted); font-size: 0.85rem; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+.boot { background: var(--card); border: 2px solid var(--bad); border-radius: 12px; padding: 14px 16px; text-align: center; }
+.boot b { display: block; margin-bottom: 4px; }
+</style>
+<style>[hidden]{display:none!important}html{-webkit-text-size-adjust:100%}body{margin:0}button{-webkit-appearance:none;appearance:none}</style>
+</head>
+<body>
+<div class="wrap" lang="de">
+  <header>
+    <h1>Wortarten-Training</h1>
+    <p class="lead">Tippe ein Wort an und wähle seine Wortart. Wenn jedes Wort eine Wortart hat, kannst du deinen Satz prüfen.</p>
+  </header>
+
+  <div id="boot" class="boot" role="status">
+    <b>Das Programm startet nicht.</b>
+    <span id="boot-msg">Auf diesem Gerät läuft gerade kein JavaScript. Öffne die Seite im Browser (Safari oder Chrome), nicht in einer Vorschau.</span>
+  </div>
+
+  <section aria-labelledby="lvl-h">
+    <h2 id="lvl-h" class="hint" style="font-family:var(--f-body);font-weight:700;margin-bottom:8px;text-align:center">Stufe wählen</h2>
+    <div class="levels" id="levels"></div>
+  </section>
+
+  <main id="play" class="wrap" style="gap:16px">
+    <div class="progress">
+      <span>Satz <b id="p-i">1</b></span>
+      <span><b id="p-r">0</b> von <b id="p-t">0</b> Wörtern richtig</span>
+    </div>
+
+    <div class="sheet">
+      <div class="sentence" id="sentence" role="group" aria-label="Satz"></div>
+    </div>
+
+    <p class="hint" style="text-align:center">Welche Wortart ist das? Tippe auf die passende Wortart.</p>
+    <div class="palette" id="palette" role="group" aria-label="Wortarten"></div>
+
+    <div class="actions">
+      <button class="btn primary" id="b-check" type="button">Prüfen</button>
+      <button class="btn" id="b-reset" type="button">Zurücksetzen</button>
+      <button class="btn primary" id="b-next" type="button" hidden>Neuer Satz</button>
+      <button class="btn" id="b-end" type="button" hidden>Auswertung ansehen</button>
+      <span class="hint" id="b-hint"></span>
+    </div>
+
+    <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
+
+    <p class="foot">Mit der Tastatur: Pfeiltasten wechseln das Wort, die Taste auf dem Button wählt die Wortart, Entf löscht.</p>
+  </main>
+
+  <section id="result" class="result" hidden aria-live="polite"></section>
+</div>
+
+<script>
+window.onerror = function (msg, src, line) {
+  var b = document.getElementById('boot'), m = document.getElementById('boot-msg');
+  if (b) { b.hidden = false; }
+  if (m) { m.textContent = 'Fehler im Programm: ' + msg + ' (Zeile ' + line + '). Bitte diese Meldung weitergeben.'; }
+};
+(function () {
+  var CLS = {
+    N:   { name: 'Nomen',       short: 'Namenwort: Mensch, Tier, Ding' },
+    V:   { name: 'Verb',        short: 'Tunwort: was jemand tut oder ist' },
+    ADJ: { name: 'Adjektiv',    short: 'Wie-Wort: wie etwas ist' },
+    ART: { name: 'Artikel',     short: 'Begleiter: der, die, das, ein, eine' },
+    PRO: { name: 'Pronomen',    short: 'Fürwort: ich, du, er, wir, ihr' },
+    PRP: { name: 'Präposition', short: 'Verhältniswort: auf, mit, über, durch' },
+    KON: { name: 'Konjunktion', short: 'Bindewort: und, aber, weil, denn' },
+    ADV: { name: 'Adverb',      short: 'Umstandswort: heute, dort, oft' },
+    ARB: { name: 'Bestimmter Artikel',   short: 'der, die, das, den, dem: etwas Bekanntes' },
+    ARU: { name: 'Unbestimmter Artikel', short: 'ein, eine, einen, einem: etwas Neues' },
+    PPR: { name: 'Personalpronomen',     short: 'Fürwort für Personen: ich, du, er, uns, mir' },
+    POS: { name: 'Possessivpronomen',    short: 'zeigt Besitz: mein, dein, sein, unser' },
+    DEM: { name: 'Demonstrativpronomen', short: 'zeigt auf etwas: dieser, diese, dieses, das' },
+    REF: { name: 'Reflexivpronomen',     short: 'bezieht sich zurück: sich, mich, dich, euch' },
+    REL: { name: 'Relativpronomen',      short: 'leitet einen Nebensatz ein: der, die, das, dem' },
+    INT: { name: 'Interrogativpronomen', short: 'Fragewort: wer, was, welche' },
+    ADL: { name: 'Lokaladverb',     short: 'fragt nach dem Ort (wo?): hier, dort, draußen' },
+    ADT: { name: 'Temporaladverb',  short: 'fragt nach der Zeit (wann?): heute, gestern, oft' },
+    ADK: { name: 'Kausaladverb',    short: 'fragt nach dem Grund (warum?): deshalb, darum' },
+    ADM: { name: 'Modaladverb',     short: 'fragt nach der Art (wie?): gern, leider, vielleicht' },
+    PRA: { name: 'Präposition + Akkusativ', short: 'verlangt den Akkusativ: für, durch, ohne, gegen' },
+    PRD: { name: 'Präposition + Dativ',     short: 'verlangt den Dativ: mit, nach, bei, zu, von' },
+    PRG: { name: 'Präposition + Genitiv',   short: 'verlangt den Genitiv: wegen, trotz, während' },
+    KOO: { name: 'Koordinierende Konjunktion', short: 'verbindet gleichrangige Teile: und, oder, aber, denn' },
+    KOS: { name: 'Subordinierende Konjunktion', short: 'leitet einen Nebensatz ein: weil, dass, wenn, obwohl' }
+  };
+  var LEVELS = [
+    { name: 'Stufe 1', classes: ['N', 'V', 'ADJ', 'ART'], sentences: [
+      { s: 'Die|ART alte|ADJ Katze|N schläft|V.' },
+      { s: 'Der|ART Junge|N liest|V ein|ART spannendes|ADJ Buch|N.' },
+      { s: 'Das|ART Mädchen|N malt|V ein|ART buntes|ADJ Bild|N.' },
+      { s: 'Die|ART Lehrerin|N erklärt|V die|ART schwere|ADJ Aufgabe|N.' },
+      { s: 'Ein|ART starker|ADJ Wind|N weht|V.' },
+      { s: 'Der|ART Bäcker|N backt|V frisches|ADJ Brot|N.' },
+      { s: 'Die|ART Kinder|N essen|V reife|ADJ Äpfel|N.' },
+      { s: 'Das|ART Wetter|N ist|V schön|ADJ.', n: '„ist“ ist ein Verb, auch wenn niemand etwas tut.' }
+    ]},
+    { name: 'Stufe 2', classes: ['N', 'V', 'ADJ', 'ART', 'PRO', 'PRP'], sentences: [
+      { s: 'Sie|PRO wartet|V auf|PRP den|ART Bus|N.' },
+      { s: 'Er|PRO schenkt|V ihr|PRO einen|ART Blumenstrauß|N.' },
+      { s: 'Wir|PRO spielen|V mit|PRP dem|ART Ball|N.' },
+      { s: 'Der|ART Vogel|N sitzt|V auf|PRP dem|ART hohen|ADJ Baum|N.' },
+      { s: 'Ich|PRO sehe|V dich|PRO.' },
+      { s: 'Die|ART Katze|N springt|V über|PRP den|ART Zaun|N.' },
+      { s: 'Du|PRO hilfst|V mir|PRO bei|PRP der|ART Arbeit|N.' },
+      { s: 'Sie|PRO läuft|V durch|PRP den|ART dunklen|ADJ Wald|N.' },
+      { s: 'Ihr|PRO wohnt|V in|PRP einem|ART kleinen|ADJ Haus|N.', n: '„Ihr“ ist hier ein Pronomen (ihr wohnt = viele Personen wohnen).' },
+      { s: 'Er|PRO wartet|V vor|PRP dem|ART Haus|N.' }
+    ]},
+    { name: 'Stufe 3', classes: ['N', 'V', 'ADJ', 'ARB', 'ARU', 'PPR', 'POS', 'DEM', 'REF', 'REL', 'INT', 'PRP', 'KON', 'ADV'],
+      parents: { ART: ['ARB', 'ARU'], PRO: ['PPR', 'POS', 'DEM', 'REF', 'REL', 'INT'] },
+      sentences: [
+      { s: 'Ich|PPR bleibe|V zu|PRP Hause|N, weil|KON ich|PPR krank|ADJ bin|V.', n: '„weil“ verbindet zwei Satzteile. Es ist eine Konjunktion.' },
+      { s: 'Heute|ADV scheint|V die|ARB Sonne|N.' },
+      { s: 'Tim|N und|KON Lisa|N spielen|V draußen|ADV.' },
+      { s: 'Der|ARB Hund|N bellt|V, aber|KON die|ARB Katze|N schläft|V.' },
+      { s: 'Wir|PPR gehen|V nach|PRP Hause|N, denn|KON es|PPR regnet|V.' },
+      { s: 'Gestern|ADV habe|V ich|PPR einen|ARU alten|ADJ Freund|N getroffen|V.', n: '„habe“ und „getroffen“ gehören zusammen und sind beide Verben.' },
+      { s: 'Sie|PPR singt|V oft|ADV ein|ARU schönes|ADJ Lied|N.' },
+      { s: 'Wenn|KON die|ARB Sonne|N scheint|V, gehen|V wir|PPR schwimmen|V.', n: '„gehen“ und „schwimmen“ sind beide Verben.' },
+      { s: 'Dort|ADV steht|V ein|ARU großer|ADJ Baum|N.' },
+      { s: 'Anna|N und|KON Ben|N bauen|V einen|ARU hohen|ADJ Turm|N.', n: 'Eigennamen wie „Anna“ und „Ben“ sind Nomen.' },
+      { s: 'Mein|POS Bruder|N spielt|V draußen|ADV und|KON ich|PPR lese|V.' },
+      { s: 'Ich|PPR wasche|V mich|REF, weil|KON ich|PPR schmutzig|ADJ bin|V.' },
+      { s: 'Dieses|DEM Buch|N gefällt|V mir|PPR, denn|KON es|PPR ist|V spannend|ADJ.' },
+      { s: 'Wer|INT kommt|V heute|ADV?' },
+      { s: 'Unser|POS Hund|N schläft|V gern|ADV, denn|KON er|PPR ist|V müde|ADJ.' },
+      { s: 'Sie|PPR kämmt|V sich|REF heute|ADV die|ARB Haare|N.' },
+      { s: 'Das|ARB Mädchen|N, das|REL dort|ADV steht|V, heißt|V Mia|N.', n: 'Das erste „das“ steht vor einem Nomen (Artikel). Das zweite leitet einen Nebensatz ein (Relativpronomen).' }
+    ]},
+    { name: 'Stufe 4', classes: ['ARB', 'ARU', 'PPR', 'POS', 'DEM', 'REF', 'REL', 'INT', 'N', 'V', 'ADJ', 'PRA', 'PRD', 'PRG', 'KOO', 'KOS', 'ADL', 'ADT', 'ADK', 'ADM'],
+      parents: { ART: ['ARB', 'ARU'], PRP: ['PRA', 'PRD', 'PRG'], KON: ['KOO', 'KOS'], PRO: ['PPR', 'POS', 'DEM', 'REF', 'REL', 'INT'], ADV: ['ADL', 'ADT', 'ADK', 'ADM'] },
+      sentences: [
+      { s: 'Die|ARB Lehrerin|N gibt|V uns|PPR eine|ARU Aufgabe|N.' },
+      { s: 'Mein|POS Bruder|N spielt|V mit|PRD seinem|POS Freund|N.', n: 'Wörter wie „mein“ und „sein“ zeigen Besitz. Sie heißen Possessivpronomen.' },
+      { s: 'Ich|PPR wasche|V mich|REF.', n: '„mich“ bezieht sich auf „ich“ zurück. Das ist ein Reflexivpronomen.' },
+      { s: 'Dieser|DEM Apfel|N schmeckt|V süß|ADJ.', n: '„Dieser“ zeigt auf einen bestimmten Apfel.' },
+      { s: 'Das|ARB Mädchen|N, das|REL singt|V, heißt|V Mia|N.', n: 'Das erste „das“ steht vor einem Nomen (Artikel). Das zweite leitet einen Nebensatz ein (Relativpronomen).' },
+      { s: 'Wer|INT hat|V den|ARB Kuchen|N gebacken|V?', n: '„Wer“ stellt eine Frage. Es ist ein Interrogativpronomen.' },
+      { s: 'Welches|INT Buch|N liest|V du|PPR?' },
+      { s: 'Sie|PPR kämmt|V sich|REF die|ARB Haare|N.' },
+      { s: 'Der|ARB Mann|N, der|REL neben|PRD dir|PPR steht|V, ist|V mein|POS Onkel|N.', n: 'Das zweite „der“ bezieht sich auf „Mann“ und leitet einen Nebensatz ein (Relativpronomen). „neben“ kann Dativ oder Akkusativ verlangen. Hier fragt man „Wo?“, also Dativ.' },
+      { s: 'Wir|PPR besuchen|V unsere|POS Oma|N in|PRD einem|ARU großen|ADJ Haus|N.', n: '„in“ kann Dativ oder Akkusativ verlangen. Hier fragt man „Wo?“, also Dativ.' },
+      { s: 'Ein|ARU Hund|N hat|V den|ARB Ball|N gefunden|V.', n: '„Ein“ führt etwas Neues ein (unbestimmt). „Den“ meint einen bekannten Ball (bestimmt).' },
+      { s: 'Das|DEM ist|V mein|POS Fahrrad|N.', n: '„Das“ steht allein und zeigt auf etwas. Es ist ein Demonstrativpronomen.' },
+      { s: 'Ihr|PPR habt|V euch|REF einen|ARU Preis|N verdient|V.' },
+      { s: 'Ich|PPR kenne|V den|ARB Jungen|N, dem|REL du|PPR geholfen|V hast|V.', n: '„dem“ leitet den Nebensatz ein (Relativpronomen). „geholfen“ und „hast“ sind beide Verben.' },
+      { s: 'Dieses|DEM Kleid|N gefällt|V mir|PPR.' },
+      { s: 'Was|INT kaufst|V du|PPR für|PRA deine|POS Schwester|N?', n: '„für“ verlangt immer den Akkusativ.' },
+      { s: 'Heute|ADT schenkt|V mir|PPR mein|POS Opa|N ein|ARU Buch|N.', n: '„Heute“ antwortet auf „Wann?“. Es ist ein Temporaladverb und verändert sich nie.' },
+      { s: 'Der|ARB Hund|N schläft|V dort|ADL unter|PRD dem|ARB Tisch|N.', n: '„dort“ antwortet auf „Wo?“. Das ist ein Lokaladverb. „unter“ steht hier mit Dativ (Wo?).' },
+      { s: 'Sie|PPR singt|V oft|ADT ein|ARU Lied|N.', n: '„oft“ antwortet auf „Wann?“ oder „Wie oft?“. Es ist ein Temporaladverb.' },
+      { s: 'Wir|PPR waren|V gestern|ADT in|PRD einem|ARU Museum|N.', n: '„in“ kann Dativ oder Akkusativ verlangen. Hier fragt man „Wo?“, also Dativ.' },
+      { s: 'Dieser|DEM Junge|N spielt|V draußen|ADL.' },
+      { s: 'Die|ARB Katze|N, die|REL hier|ADL wohnt|V, ist|V klein|ADJ.', n: 'Das erste „die“ ist ein Artikel, das zweite „die“ ein Relativpronomen. „hier“ ist ein Lokaladverb.' },
+      { s: 'Es|PPR regnet|V, deshalb|ADK bleibe|V ich|PPR zu|PRD Hause|N.', n: '„deshalb“ antwortet auf „Warum?“. Es ist ein Kausaladverb. „zu“ verlangt immer den Dativ.' },
+      { s: 'Wir|PPR haben|V Hunger|N, darum|ADK essen|V wir|PPR einen|ARU Apfel|N.', n: '„darum“ nennt den Grund. Es ist ein Kausaladverb.' },
+      { s: 'Mein|POS Bruder|N spielt|V gern|ADM mit|PRD dem|ARB Ball|N.', n: '„gern“ antwortet auf „Wie?“. Es ist ein Modaladverb.' },
+      { s: 'Er|PPR kommt|V vielleicht|ADM mit|PRD seinem|POS Freund|N.', n: '„vielleicht“ sagt etwas über die Art und Weise. Es ist ein Modaladverb.' },
+      { s: 'Leider|ADM regnet|V es|PPR.' },
+      { s: 'Wir|PPR gehen|V durch|PRA den|ARB Park|N.', n: '„durch“ verlangt immer den Akkusativ.' },
+      { s: 'Sie|PPR kommt|V ohne|PRA ihren|POS Bruder|N.' },
+      { s: 'Nach|PRD dem|ARB Essen|N gehen|V wir|PPR spazieren|V.', n: '„nach“ verlangt immer den Dativ. „gehen“ und „spazieren“ sind beide Verben.' },
+      { s: 'Wegen|PRG des|ARB Regens|N bleibe|V ich|PPR zu|PRD Hause|N.', n: '„wegen“ verlangt den Genitiv. Das siehst du an „des Regens“.' },
+      { s: 'Während|PRG der|ARB Pause|N spielen|V wir|PPR draußen|ADL.', n: '„während“ verlangt den Genitiv: „der Pause“.' },
+      { s: 'Trotz|PRG des|ARB Wetters|N gehen|V wir|PPR schwimmen|V.', n: '„trotz“ verlangt den Genitiv. „gehen“ und „schwimmen“ sind beide Verben.' },
+      { s: 'Anna|N und|KOO Ben|N spielen|V draußen|ADL.', n: '„und“ verbindet zwei gleichrangige Wörter. Es ist koordinierend.' },
+      { s: 'Der|ARB Hund|N bellt|V, aber|KOO die|ARB Katze|N schläft|V.', n: '„aber“ verbindet zwei Hauptsätze, die gleichrangig sind. Es ist koordinierend.' },
+      { s: 'Möchtest|V du|PPR Tee|N oder|KOO Kaffee|N?' },
+      { s: 'Ich|PPR bleibe|V zu|PRD Hause|N, denn|KOO es|PPR regnet|V.', n: '„denn“ ist koordinierend. Das Verb „regnet“ steht danach an zweiter Stelle, wie in einem Hauptsatz.' },
+      { s: 'Ich|PPR bleibe|V zu|PRD Hause|N, weil|KOS ich|PPR krank|ADJ bin|V.', n: '„weil“ leitet einen Nebensatz ein. Das Verb „bin“ steht am Ende. Es ist subordinierend.' },
+      { s: 'Er|PPR sagt|V, dass|KOS er|PPR müde|ADJ ist|V.', n: '„dass“ leitet einen Nebensatz ein. Es ist subordinierend.' },
+      { s: 'Wir|PPR gehen|V schwimmen|V, wenn|KOS die|ARB Sonne|N scheint|V.', n: '„wenn“ leitet einen Nebensatz ein. „gehen“ und „schwimmen“ sind beide Verben.' },
+      { s: 'Obwohl|KOS es|PPR regnet|V, gehen|V wir|PPR spazieren|V.', n: '„obwohl“ leitet einen Nebensatz ein. „gehen“ und „spazieren“ sind beide Verben.' }
+    ]}
+  ];
+  var CATS = [
+    { id: 'dekl', name: 'Deklinierbar', hint: 'verändert sich nach Fall, Zahl und Geschlecht' },
+    { id: 'konj', name: 'Konjugierbar', hint: 'verändert sich nach Person und Zeit' },
+    { id: 'unv',  name: 'Unveränderlich', hint: 'bleibt immer gleich' }
+  ];
+  var CAT = { N: 'dekl', ART: 'dekl', ARB: 'dekl', ARU: 'dekl', ADJ: 'dekl', PRO: 'dekl', PPR: 'dekl', POS: 'dekl', DEM: 'dekl', REF: 'dekl', REL: 'dekl', INT: 'dekl', V: 'konj', PRP: 'unv', PRA: 'unv', PRD: 'unv', PRG: 'unv', KON: 'unv', KOO: 'unv', KOS: 'unv', ADV: 'unv', ADL: 'unv', ADT: 'unv', ADK: 'unv', ADM: 'unv' };
+  var ORDER = ['N', 'ART', 'ARB', 'ARU', 'ADJ', 'PRO', 'PPR', 'POS', 'DEM', 'REF', 'REL', 'INT', 'V', 'PRP', 'PRA', 'PRD', 'PRG', 'KON', 'KOO', 'KOS', 'ADV', 'ADL', 'ADT', 'ADK', 'ADM'];
+  var KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e'];
+  LEVELS.forEach(function (l) {
+    l.classes.sort(function (a, b) {
+      var ca = CATS.findIndex(function (c) { return c.id === CAT[a]; }), cb = CATS.findIndex(function (c) { return c.id === CAT[b]; });
+      return ca - cb || ORDER.indexOf(a) - ORDER.indexOf(b);
+    });
+  });
+  var SYM = { N: 'tri3', ART: 'tri1', ARB: 'tri1', ARU: 'tri1', ADJ: 'tri2', V: 'circ3', ADV: 'circ1', ADL: 'circ1', ADT: 'circ1', ADK: 'circ1', ADM: 'circ1',
+    PRO: 'pron', PPR: 'pron', POS: 'pron', DEM: 'pron', REF: 'pron', REL: 'pron', INT: 'pron', PRP: 'moon', PRA: 'moon', PRD: 'moon', PRG: 'moon', KON: 'bar', KOO: 'bar', KOS: 'bar' };
+  var SHAPE = {
+    tri3: '<polygon points="12,2.5 22.5,21 1.5,21"/>',
+    tri2: '<polygon points="12,6 20,20.5 4,20.5"/>',
+    tri1: '<polygon points="12,10 18,20 6,20"/>',
+    pron: '<polygon points="12,2 17.5,21.5 6.5,21.5"/>',
+    circ3: '<circle cx="12" cy="12" r="10"/>',
+    circ1: '<circle cx="12" cy="12" r="5"/>',
+    moon: '<path d="M1.5 18 Q12 3 22.5 18 Q12 11.5 1.5 18Z"/>',
+    bar: '<rect x="2" y="9.5" width="20" height="5" rx="1.5"/>'
+  };
+  function sym(k) {
+    return '<svg class="sym" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="fill:var(--c-' + k + ')">' + SHAPE[SYM[k]] + '</svg>';
+  }
+  function setLabel(l, k) { l.innerHTML = k ? sym(k) + '<span>' + CLS[k].name + '</span>' : '?'; }
+  var S = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var el = {
+    levels: $('levels'), play: $('play'), result: $('result'), sentence: $('sentence'), palette: $('palette'),
+    pI: $('p-i'), pR: $('p-r'), pT: $('p-t'),
+    check: $('b-check'), reset: $('b-reset'), next: $('b-next'), end: $('b-end'), hint: $('b-hint'), fb: $('feedback')
+  };
+  var toks = [];
+  function esc(t) { return String(t).replace(/[&<>\"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function parse(sent) {
+    var out = [];
+    sent.s.split(' ').forEach(function (part) {
+      var m = part.match(/^(.+?)\|([A-Z]+)(.*)$/);
+      out.push({ w: m[1], tag: m[2], p: m[3] });
+    });
+    return out;
+  }
+  function loadBest() { try { return JSON.parse(localStorage.getItem('wortarten-best') || '{}'); } catch (e) { return {}; } }
+  function saveBest(lv, pct) {
+    try { var b = loadBest(); if (!(b[lv] >= pct)) { b[lv] = pct; localStorage.setItem('wortarten-best', JSON.stringify(b)); } } catch (e) {}
+  }
+  var LEVEL_INFO = ['4 Wortarten', '6 Wortarten', '8 Wortarten, 2 Unterkategorien', '8 Wortarten, 5 Unterkategorien'];
+  function buildLevels() {
+    var best = loadBest();
+    el.levels.innerHTML = LEVELS.map(function (l, i) {
+      var label = l.name + ': ' + LEVEL_INFO[i] + (best[i] != null ? ', Bestwert ' + best[i] + ' Prozent' : '');
+      return '<button type="button" class="lvl" data-lv="' + i + '" aria-pressed="' + (S && S.lv === i) + '" aria-label="' + label + '">' +
+        '<svg viewBox="0 28 180 156" aria-hidden="true" focusable="false">' +
+        '<circle class="lcirc" cx="90" cy="90" r="55"/>' +
+        '<text class="lst" x="90" y="76">STUFE</text><text class="lnum" x="90" y="118">' + (i + 1) + '</text>' +
+        '<path id="lp' + i + '" d="M6,90 A84,84 0 0 0 174,90" fill="none"/>' +
+        '<text class="lring"><textPath href="#lp' + i + '" startOffset="50%">' + LEVEL_INFO[i] + '</textPath></text>' +
+        '</svg></button>';
+    }).join('');
+  }
+  function topList(L) {
+    var par = L.parents || {}, out = [];
+    L.classes.forEach(function (k) {
+      var p = k;
+      Object.keys(par).forEach(function (pk) { if (par[pk].indexOf(k) >= 0) p = pk; });
+      if (out.indexOf(p) < 0) out.push(p);
+    });
+    return out;
+  }
+  function btnHtml(k, kb, o) {
+    return '<button type="button" class="cls' + (o.parent ? ' par' : '') + (o.open ? ' open' : '') + '" data-' + (o.parent ? 'parent' : 'k') + '="' + k + '" style="--c:var(--c-' + k + ')"' +
+      (o.parent ? ' aria-expanded="' + (o.open ? 'true' : 'false') + '"' : '') + '>' + (kb ? '<kbd>' + kb + '</kbd>' : '') +
+      sym(k) + '<b>' + CLS[k].name + '</b><span>' + CLS[k].short + (o.parent ? ' · Unterart wählen' : '') + '</span></button>';
+  }
+  function buildPalette() {
+    var L = LEVELS[S.lv], par = L.parents || {}, tops = topList(L);
+    var groups = CATS.map(function (c) { return [c, tops.filter(function (k) { return CAT[k] === c.id; })]; })
+      .filter(function (g) { return g[1].length; });
+    el.palette.innerHTML = groups.map(function (g) {
+      var html = '<div class="pgroup" data-cat="' + g[0].id + '" style="flex-grow:' + Math.max(1, g[1].length * 2 - 1) + '"><h3>' + g[0].name + '<span>' + g[0].hint + '</span></h3><div class="pgrid">' + g[1].map(function (k) {
+        var kb = !S.open && KEYS[tops.indexOf(k)] ? KEYS[tops.indexOf(k)].toUpperCase() : '';
+        return btnHtml(k, kb, { parent: !!par[k], open: S.open === k });
+      }).join('') + '</div>';
+      if (S.open && par[S.open] && g[1].indexOf(S.open) >= 0) {
+        html += '<div class="subpanel" style="--c:var(--c-' + S.open + ')"><div class="subhead"><b>' + CLS[S.open].name + ': Welche Art?</b>' +
+          '<button type="button" class="subclose" data-close="1">Schließen</button></div><div class="pgrid">' +
+          par[S.open].map(function (k, i) { return btnHtml(k, KEYS[i].toUpperCase(), {}); }).join('') + '</div></div>';
+      }
+      return html + '</div>';
+    }).join('');
+  }
+  function toggleOpen(k) {
+    S.open = S.open === k ? null : k;
+    buildPalette();
+    if (S.open) { var f = el.palette.querySelector('.subpanel .cls'); if (f) f.focus(); }
+  }
+  function pick(k) {
+    if ((LEVELS[S.lv].parents || {})[k]) toggleOpen(k); else assign(k);
+  }
+  function start(lv) {
+    var pool = shuffle(LEVELS[lv].sentences);
+    S = { lv: lv, q: pool, i: 0, n: 1, open: null, cur: null, as: [], sel: 0, checked: false, right: 0, total: 0, stats: {} };
+    buildLevels(); buildPalette();
+    el.result.hidden = true; el.play.hidden = false;
+    loadSentence();
+  }
+  function loadSentence() {
+    if (S.open) { S.open = null; buildPalette(); }
+    var sent = S.q[S.i];
+    S.cur = parse(sent); S.note = sent.n || '';
+    S.as = S.cur.map(function () { return null; });
+    S.sel = 0; S.checked = false;
+    el.sentence.innerHTML = S.cur.map(function (t, i) {
+      return '<span class="unit"><button type="button" class="tok" data-i="' + i + '"><span class="w">' + esc(t.w) + '</span><span class="l"></span></button>' +
+        (t.p ? '<span class="punct">' + esc(t.p) + '</span>' : '') + '</span>';
+    }).join('');
+    toks = Array.prototype.slice.call(el.sentence.querySelectorAll('.tok'));
+    el.fb.hidden = true; el.fb.innerHTML = '';
+    el.next.hidden = true; el.end.hidden = true; el.check.hidden = false; el.reset.hidden = false;
+    update();
+  }
+  function nextSentence() {
+    S.i++; S.n++;
+    if (S.i >= S.q.length) {
+      var last = S.q[S.q.length - 1], q = shuffle(LEVELS[S.lv].sentences);
+      if (q.length > 1 && q[0] === last) q.push(q.shift());
+      S.q = q; S.i = 0;
+    }
+    loadSentence();
+    el.sentence.scrollIntoView({ block: 'nearest' });
+  }
+  function update() {
+    var n = S.cur.length;
+    toks.forEach(function (b, i) {
+      var k = S.as[i];
+      b.classList.toggle('has', !!k);
+      b.classList.toggle('sel', !S.checked && i === S.sel);
+      var ck = S.checked ? S.cur[i].tag : k;
+      if (ck) b.style.setProperty('--c', 'var(--c-' + ck + ')'); else b.style.removeProperty('--c');
+      if (!S.checked) {
+        setLabel(b.querySelector('.l'), k);
+        b.setAttribute('aria-label', S.cur[i].w + ', ' + (k ? CLS[k].name : 'noch ohne Wortart'));
+      }
+      b.disabled = S.checked;
+    });
+    var open = S.as.filter(function (k) { return !k; }).length;
+    el.check.disabled = open > 0 || S.checked;
+    el.hint.textContent = S.checked ? '' : (open > 0 ? (open === 1 ? 'Noch 1 Wort offen' : 'Noch ' + open + ' Wörter offen') : 'Bereit zum Prüfen');
+    Array.prototype.forEach.call(el.palette.querySelectorAll('.cls'), function (b) { b.disabled = S.checked; });
+    el.pI.textContent = S.n;
+    el.pR.textContent = S.right; el.pT.textContent = S.total;
+  }
+  function moveSel(i, focus) {
+    S.sel = (i + S.cur.length) % S.cur.length;
+    update();
+    if (focus) toks[S.sel].focus({ preventScroll: true });
+  }
+  function assign(k) {
+    if (S.checked) return;
+    if (S.open) { S.open = null; buildPalette(); }
+    S.as[S.sel] = k;
+    var n = S.cur.length, next = -1;
+    for (var step = 1; step <= n; step++) {
+      var j = (S.sel + step) % n;
+      if (!S.as[j]) { next = j; break; }
+    }
+    if (next >= 0) S.sel = next;
+    update();
+  }
+  function check() {
+    if (S.checked || S.as.some(function (k) { return !k; })) return;
+    S.checked = true;
+    var wrong = [], good = 0;
+    S.cur.forEach(function (t, i) {
+      var st = S.stats[t.tag] || (S.stats[t.tag] = { r: 0, t: 0 });
+      st.t++;
+      S.total++;
+      var b = toks[i];
+      if (S.as[i] === t.tag) { st.r++; S.right++; good++; b.classList.add('ok'); }
+      else {
+        wrong.push({ w: t.w, tag: t.tag, guess: S.as[i] });
+        b.classList.add('bad');
+        b.style.setProperty('--c', 'var(--c-' + t.tag + ')');
+        setLabel(b.querySelector('.l'), t.tag);
+        var g = document.createElement('span'); g.className = 'g'; g.textContent = CLS[S.as[i]].name;
+        b.appendChild(g);
+      }
+      b.setAttribute('aria-label', t.w + ', ' + CLS[t.tag].name + (S.as[i] === t.tag ? ', richtig' : ', du hattest ' + CLS[S.as[i]].name));
+    });
+    S.sel = -1;
+    var n = S.cur.length, html;
+    if (!wrong.length) {
+      html = '<div class="head good">Alles richtig: ' + n + ' von ' + n + ' Wörtern.</div>';
+    } else {
+      html = '<div class="head">' + good + ' von ' + n + ' Wörtern richtig.</div><ul>' + wrong.map(function (x) {
+        return '<li><b>' + esc(x.w) + '</b> ist ein ' + CLS[x.tag].name + ' (' + CLS[x.tag].short + '). Du hattest: ' + CLS[x.guess].name + '.</li>';
+      }).join('') + '</ul>';
+    }
+    if (S.note) html += '<p class="note">' + esc(S.note) + '</p>';
+    el.fb.innerHTML = html; el.fb.hidden = false;
+    el.check.hidden = true; el.reset.hidden = true; el.next.hidden = false; el.end.hidden = false;
+    update();
+    el.next.focus({ preventScroll: true });
+  }
+  function showResult() {
+    el.play.hidden = true; el.result.hidden = false;
+    var pct = S.total ? Math.round(S.right / S.total * 100) : 0;
+    saveBest(S.lv, pct); buildLevels();
+    var keys = Object.keys(S.stats).sort(function (a, b) { return S.stats[a].r / S.stats[a].t - S.stats[b].r / S.stats[b].t; });
+    var msg = pct >= 90 ? 'Sehr gut. Du erkennst die Wortarten sicher.' : pct >= 70 ? 'Gut. Die Wortarten mit den kürzeren Balken lohnen sich noch einmal.' : 'Das wird. Probiere dieselbe Stufe noch einmal.';
+    var rows = keys.map(function (k) {
+      var s = S.stats[k], p = Math.round(s.r / s.t * 100);
+      return '<div class="row" style="--c:var(--c-' + k + ')"><span class="rn">' + sym(k) + CLS[k].name + '</span><span class="track" aria-hidden="true"><i style="width:' + p + '%"></i></span><span class="n">' + s.r + ' von ' + s.t + '</span></div>';
+    }).join('');
+    el.result.innerHTML = '<h2>Ergebnis ' + LEVELS[S.lv].name + '</h2><div class="big">' + pct + ' %</div><p>' + S.right + ' von ' + S.total + ' Wörtern richtig. ' + msg + '</p><div class="rows">' + rows + '</div>' +
+      '<div class="actions"><button type="button" class="btn primary" id="r-more">Weiter üben</button>' +
+      '<button type="button" class="btn" id="r-again">Neu beginnen</button>' +
+      (S.lv < LEVELS.length - 1 ? '<button type="button" class="btn" id="r-next">' + LEVELS[S.lv + 1].name + '</button>' : '') + '</div>';
+    $('r-more').addEventListener('click', function () { el.result.hidden = true; el.play.hidden = false; nextSentence(); });
+    $('r-again').addEventListener('click', function () { start(S.lv); });
+    var rn = $('r-next'); if (rn) rn.addEventListener('click', function () { start(S.lv + 1); });
+    $('r-more').focus({ preventScroll: true });
+  }
+  el.levels.addEventListener('click', function (e) { var b = e.target.closest('.lvl'); if (b) start(+b.dataset.lv); });
+  el.sentence.addEventListener('click', function (e) { var b = e.target.closest('.tok'); if (b && !S.checked) moveSel(+b.dataset.i, false); });
+  el.palette.addEventListener('click', function (e) {
+    if (e.target.closest('[data-close]')) { S.open = null; buildPalette(); return; }
+    var b = e.target.closest('.cls');
+    if (!b || S.checked) return;
+    if (b.dataset.parent) toggleOpen(b.dataset.parent); else assign(b.dataset.k);
+  });
+  el.check.addEventListener('click', check);
+  el.reset.addEventListener('click', function () { S.as = S.cur.map(function () { return null; }); S.sel = 0; update(); });
+  el.next.addEventListener('click', nextSentence);
+  el.end.addEventListener('click', showResult);
+  document.addEventListener('keydown', function (e) {
+    if (!S || S.checked || el.play.hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+    var L = LEVELS[S.lv], par = L.parents || {}, tops = topList(L);
+    var ki = KEYS.indexOf(String(e.key).toLowerCase());
+    if (e.key === 'Escape' && S.open) { S.open = null; buildPalette(); e.preventDefault(); }
+    else if (ki >= 0) {
+      if (S.open) { var ch = par[S.open][ki]; if (ch) { assign(ch); e.preventDefault(); } }
+      else if (tops[ki]) { pick(tops[ki]); e.preventDefault(); }
+    }
+    else if (e.key === 'ArrowRight') { moveSel(S.sel + 1, true); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft') { moveSel(S.sel - 1, true); e.preventDefault(); }
+    else if (e.key === 'Delete' || e.key === 'Backspace') { S.as[S.sel] = null; update(); e.preventDefault(); }
+  });
+  start(0);
+  var bt = document.getElementById('boot'); if (bt) bt.hidden = true;
+})();
+</script>
+</body>
+</html>
